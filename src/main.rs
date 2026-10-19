@@ -9,7 +9,7 @@ use std::{
 };
 
 use cpal::{
-    SupportedStreamConfig,
+    SupportedStreamConfigRange,
     DuplexStreamConfig,
     SampleFormat,
     StreamConfig,
@@ -28,13 +28,13 @@ fn report(context: &str, err: impl Display) {
     eprintln!("[  [!]] {context}: {err}");
 }
 
-fn fmt_sup_config(config: SupportedStreamConfig) -> String {
+fn fmt_sup_config_rng(config: SupportedStreamConfigRange) -> String {
     let buf = match config.buffer_size() {
         cpal::SupportedBufferSize::Range { min, max } => format!("{min} - {max}"),
         cpal::SupportedBufferSize::Unknown => "unk".into(),
     };
 
-    format!("{}ch {}hz {} buf: {buf}", config.channels(), config.sample_rate(), config.sample_format())
+    format!("{}ch {} - {}hz {} buf: {buf}", config.channels(), config.min_sample_rate(), config.max_sample_rate(), config.sample_format())
 }
 
 fn main() {
@@ -81,7 +81,7 @@ fn print_device_info(device: &Device) {
     match device.supported_input_configs() {
         Ok(configs) => {
             for config in configs {
-                println!(" - {config:?}");
+                println!(" - {}", fmt_sup_config_rng(config));
             }
         }
         Err(e) => report("Failed to query supported input configs", e),
@@ -91,7 +91,7 @@ fn print_device_info(device: &Device) {
     match device.supported_output_configs() {
         Ok(configs) => {
             for config in configs {
-                println!(" - {config:?}");
+                println!(" - {}", fmt_sup_config_rng(config));
             }
         }
         Err(e) => report("Failed to query supported output configs", e),
