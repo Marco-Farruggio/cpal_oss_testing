@@ -4,3 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+cpal = { git = "https://github.com/marco-farruggio/cpal", branch = "new-oss-host" }
