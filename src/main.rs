@@ -150,7 +150,7 @@ fn test_input(device: &Device) {
         }
     };
 
-    println!("[I] Starting stream ... (make some noise)");
+    println!("[I] Starting stream ...");
     if let Err(e) = stream.start() {
         report("[I] Failed to start stream", e);
         return;
