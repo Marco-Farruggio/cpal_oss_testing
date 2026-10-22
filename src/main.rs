@@ -146,7 +146,7 @@ fn test_input(device: &Device) {
         Ok(stream) => stream,
         Err(e) => {
             report("[I] Failed to build stream", &e);
-            println!("{} | {:?}", e.kind(), e.message());
+            println!("{:?} | {:?}", e.kind(), e.message());
             return;
         }
     };
