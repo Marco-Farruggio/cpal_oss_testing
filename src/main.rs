@@ -25,7 +25,7 @@ use cpal::{
 
 /// Print a non-fatal error in a consistent format.
 fn report(context: &str, err: impl Display) {
-    eprintln!("[  [!]] {context}: {err}");
+    eprintln!("[I] [!] {context}: {err}");
 }
 
 fn fmt_sup_config_rng(config: SupportedStreamConfigRange) -> String {
@@ -123,7 +123,7 @@ fn test_input(device: &Device) {
     println!("[I] Building stream ...");
     let stream = match device.build_input_stream_raw(
         config,
-        SampleFormat::F32,
+        SampleFormat::U8,
         move |data, _info| {
             cb_calls.fetch_add(1, Ordering::Relaxed);
 
@@ -145,7 +145,8 @@ fn test_input(device: &Device) {
     ) {
         Ok(stream) => stream,
         Err(e) => {
-            report("[I] Failed to build stream", e);
+            report("[I] Failed to build stream", &e);
+            println!("{} | {:?}", e.kind(), e.message());
             return;
         }
     };
