@@ -101,7 +101,7 @@ fn print_device_info(device: &Device) {
 fn test_input(device: &Device) {
     println!("[I] Starting Input Capture Test ...");
     let config = StreamConfig {
-        channels: 2,
+        channels: 1,
         sample_rate: 48_000,
         buffer_size: BufferSize::Default,
     };
