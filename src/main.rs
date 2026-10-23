@@ -127,15 +127,16 @@ fn test_input(device: &Device) {
         move |data, _info| {
             cb_calls.fetch_add(1, Ordering::Relaxed);
 
-            // Can't meaningfully report from the audio thread; count and skip instead.
-            let Some(samples) = data.as_slice::<f32>() else {
+            let Some(samples) = data.as_slice::<u8>() else {
                 cb_bad.fetch_add(1, Ordering::Relaxed);
                 return;
             };
 
             cb_samples.fetch_add(samples.len() as u64, Ordering::Relaxed);
 
-            let peak = samples.iter().fold(0f32, |m, s| m.max(s.abs()));
+            let peak = samples
+                .iter()
+                .fold(0f32, |m, &s| m.max(((s as f32 - 128.0) / 128.0).abs()));
             cb_peak.fetch_max(peak.to_bits(), Ordering::Relaxed);
         },
         |err| {
