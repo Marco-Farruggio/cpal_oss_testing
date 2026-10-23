@@ -257,11 +257,11 @@ fn test_duplex(device: &Device) {
     println!("[D] Building stream ...");
     let stream = match device.build_duplex_stream_raw(
         config,
-        SampleFormat::F32,
-        SampleFormat::F32,
+        SampleFormat::U8,
+        SampleFormat::U8,
         move |input, output, _info| {
             // Can't meaningfully report from the audio thread; skip the buffer instead.
-            let (Some(i), Some(o)) = (input.as_slice::<f32>(), output.as_slice_mut::<f32>())
+            let (Some(i), Some(o)) = (input.as_slice::<u8>(), output.as_slice_mut::<u8>())
             else {
                 return;
             };
