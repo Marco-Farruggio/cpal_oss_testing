@@ -288,8 +288,8 @@ fn test_duplex(device: &Device) {
         return;
     }
 
-    println!("[D] Sleeping for 10s");
-    sleep(Duration::from_secs(10));
+    println!("[D] Sleeping for 20s");
+    sleep(Duration::from_secs(20));
 
     println!("[D] Stopping stream ...");
     if let Err(e) = stream.stop(None) {
