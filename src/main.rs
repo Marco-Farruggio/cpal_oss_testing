@@ -176,7 +176,7 @@ fn test_input(device: &Device) {
     let bad = nbad.load(Ordering::Relaxed);
 
     println!("[I] Number of Callbacks: {calls}");
-    println!("[I] Samples captured (~288000 expected for 3s 48kHz 2ch): {samples}");
+    println!("[I] Samples captured (~144K expected for 3s 48kHz 2ch): {samples}");
     if bad > 0 {
         report("[I] Non-F32 buffers received", bad);
     }
