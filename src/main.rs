@@ -86,6 +86,7 @@ fn print_device_info(device: &Device) {
         }
         Err(e) => report("Failed to query supported input configs", e),
     }
+    println!(" - Default: {:?}", device.default_input_config().unwrap())
 
     println!(" - Out:");
     match device.supported_output_configs() {
@@ -96,6 +97,7 @@ fn print_device_info(device: &Device) {
         }
         Err(e) => report("Failed to query supported output configs", e),
     }
+    println!(" - Default: {:?}", device.default_output_config().unwrap())
 }
 
 fn test_input(device: &Device) {
