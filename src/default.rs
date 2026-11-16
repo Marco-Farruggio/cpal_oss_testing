@@ -23,9 +23,8 @@ pub fn monitor() -> std::io::Result<()> {
             path_bytes.len(),
         );
 
-        // Use the precise address length: family size + path length.
-        // This is the canonical approach used by libraries like `devd-rs`.
-        let addr_len = (mem::size_of_val(&addr.sun_family) + path_bytes.len()) as libc::socklen_t;
+        // The offset of sun_path is 2 bytes (sun_len + sun_family)
+        let addr_len = (2 + path_bytes.len()) as libc::socklen_t;
         if connect(
             sockfd,
             &addr as *const sockaddr_un as *const _,
