@@ -40,10 +40,6 @@ fn fmt_sup_config_rng(config: SupportedStreamConfigRange) -> String {
 }
 
 fn main() {
-    let res = crate::default::monitor();
-    println!("{res:?}");
-
-    // original below ...
     let host = default_host();
 
     let devices = match host.devices() {
@@ -62,6 +58,9 @@ fn main() {
         test_input(&device);
         test_duplex(&device);
     }
+
+    let res = crate::default::monitor();
+    println!("{res:?}");
 }
 
 fn print_device_info(device: &Device) {
