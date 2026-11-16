@@ -23,6 +23,8 @@ use cpal::{
     },
 };
 
+mod default;
+
 /// Print a non-fatal error in a consistent format.
 fn report(context: &str, err: impl Display) {
     eprintln!("[I] [!] {context}: {err}");
@@ -56,6 +58,8 @@ fn main() {
         test_input(&device);
         test_duplex(&device);
     }
+
+    crate::default::monitor();
 }
 
 fn print_device_info(device: &Device) {

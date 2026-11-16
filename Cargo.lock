@@ -132,6 +132,7 @@ name = "cpal_oss_testing"
 version = "0.1.0"
 dependencies = [
  "cpal",
+ "libc",
 ]
 
 [[package]]
