@@ -1,5 +1,4 @@
-use libc::{sa_family_t, connect, recv, sockaddr_un, socket, AF_UNIX, SOCK_SEQPACKET};
-use std::ffi::CString;
+use libc::{connect, recv, sockaddr_un, socket, AF_UNIX, SOCK_SEQPACKET};
 use std::mem;
 use std::os::unix::io::RawFd;
 use std::ptr;
@@ -14,18 +13,22 @@ pub fn monitor() -> std::io::Result<()> {
             return Err(std::io::Error::last_os_error());
         }
 
-        // Prepare the socket address
+        // Prepare the socket address (zeroed => sun_path is NUL-terminated)
         let mut addr: sockaddr_un = mem::zeroed();
-        addr.sun_family = AF_UNIX as _;
-        let path_cstr = CString::new(DEVD_PIPE).unwrap();
+        addr.sun_family = AF_UNIX as libc::sa_family_t;
+
+        let path_bytes = DEVD_PIPE.as_bytes();
+        // Leave room for the trailing NUL that mem::zeroed() already placed there
+        assert!(path_bytes.len() < addr.sun_path.len());
         ptr::copy_nonoverlapping(
-            path_cstr.as_ptr() as *const u8,
+            path_bytes.as_ptr(),
             addr.sun_path.as_mut_ptr() as *mut u8,
-            DEVD_PIPE.len(),
+            path_bytes.len(),
         );
 
-        // Connect to the devd pipe
-        let addr_len = (mem::size_of::<sa_family_t>() + DEVD_PIPE.len()) as u32;
+        // Connect to the devd pipe.
+        // Use full struct size, matching the C `sizeof(sun)`.
+        let addr_len = mem::size_of::<sockaddr_un>() as libc::socklen_t;
         if connect(
             sockfd,
             &addr as *const sockaddr_un as *const _,
@@ -48,9 +51,10 @@ pub fn monitor() -> std::io::Result<()> {
             }
 
             let msg = String::from_utf8_lossy(&buf[..n as usize]);
-            // Filter for sound system connection events
             if msg.contains("system=\"SND\"") && msg.contains("subsystem=\"CONN\"") {
-                println!("Default audio device changed: {msg}");
+                println!("Audio device topology changed:\n{msg}");
+                // parse `cdev="dspN"` out of the message, or just
+                // re-read hw.snd.default_unit via sysctl
             }
         }
     }

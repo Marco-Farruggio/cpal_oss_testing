@@ -59,7 +59,8 @@ fn main() {
         test_duplex(&device);
     }
 
-    crate::default::monitor();
+    let res = crate::default::monitor();
+    println!("{res:?}");
 }
 
 fn print_device_info(device: &Device) {
