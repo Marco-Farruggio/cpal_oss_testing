@@ -40,6 +40,9 @@ fn fmt_sup_config_rng(config: SupportedStreamConfigRange) -> String {
 }
 
 fn main() {
+    default::test_default_output();
+
+    // original ... :
     let host = default_host();
 
     let devices = match host.devices() {
