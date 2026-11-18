@@ -1,3 +1,4 @@
+use cpal::{traits::{DeviceTrait, HostTrait, StreamTrait}, StreamConfig, BufferSize, SampleFormat};
 use libc::{connect, recv, sockaddr_un, socket, AF_UNIX, SOCK_SEQPACKET};
 use std::mem;
 use std::os::unix::io::RawFd;
@@ -59,4 +60,40 @@ pub fn monitor() -> std::io::Result<()> {
         }
     }
     Ok(())
+}
+
+pub fn test_default_output() {
+    let host = cpal::default_host();
+
+    // should cpal diferentiate between the current output device (static) and a dynamic handle?
+    let device = host.default_output_device().unwrap();
+    let config = StreamConfig {
+        channels: 2,
+        sample_rate: 48_000,
+        buffer_size: BufferSize::Default,
+    };
+
+    let mut phase = 0f32;
+
+    let stream = device.build_output_stream_raw(
+        config,
+        SampleFormat::F32,
+        move |data, _info| {
+            for frame in data.as_slice_mut::<f32>().unwrap().chunks_mut(2) {
+                let v = phase.sin() * 0.2;
+                frame[0] = v;
+                if frame.len() > 1 {
+                    frame[1] = v;
+                }
+                phase = (phase + 0.0576) % 6.283;
+            }
+        },
+        |err| {
+            eprintln!("[defO] Stream Error: {err}");
+        },
+        None
+    ).unwrap();
+
+    stream.start().unwrap();
+    std::thread::sleep(std::time::Duration::from_secs(180)); // 3mins
 }
